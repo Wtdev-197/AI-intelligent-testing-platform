@@ -16,8 +16,8 @@ async function init() {
 }
 
 function restoreViewState() {
-    const savedProjectId = localStorage.getItem('hc_current_project_id');
-    const savedView = localStorage.getItem('hc_current_view');
+    const savedProjectId = localStorage.getItem('WT_current_project_id');
+    const savedView = localStorage.getItem('WT_current_view');
     if (savedProjectId) {
         currentProjectId = parseInt(savedProjectId);
         const project = projects.find(p => p.id === currentProjectId);
@@ -35,7 +35,7 @@ function restoreViewState() {
                 document.getElementById('apiDocView').style.display = 'block';
                 
                 // 恢复文档导入状态
-                const savedDocImported = localStorage.getItem('hc_doc_imported');
+                const savedDocImported = localStorage.getItem('WT_doc_imported');
                 if (savedDocImported === 'true') {
                     const docMain = document.getElementById('docMain');
                     const apiDocActions = document.getElementById('apiDocActions');
@@ -46,16 +46,16 @@ function restoreViewState() {
                     if (apiDocActions) apiDocActions.style.display = 'flex';
                     
                     // 检查是否有已保存的需求数据
-                    const savedRequirement = localStorage.getItem('hc_requirement_saved');
+                    const savedRequirement = localStorage.getItem('WT_requirement_saved');
                     if (savedRequirement === 'true') {
                         // 恢复已保存的文档树
-                        const savedTreeHTML = localStorage.getItem('hc_saved_requirement_tree');
+                        const savedTreeHTML = localStorage.getItem('WT_saved_requirement_tree');
                         if (docTree && savedTreeHTML) {
                             docTree.innerHTML = savedTreeHTML;
                         }
                         
                         // 恢复已保存的文档内容
-                        const savedContent = localStorage.getItem('hc_saved_requirement_content');
+                        const savedContent = localStorage.getItem('WT_saved_requirement_content');
                         if (docEditor && savedContent) {
                             docEditor.innerHTML = savedContent;
                         }
@@ -68,13 +68,13 @@ function restoreViewState() {
                         }
                     } else {
                         // 恢复文档导入时的默认树结构
-                        const savedTreeHTML = localStorage.getItem('hc_doc_tree');
+                        const savedTreeHTML = localStorage.getItem('WT_doc_tree');
                         if (docTree && savedTreeHTML) {
                             docTree.innerHTML = savedTreeHTML;
                         }
                         
                         // 恢复文档内容
-                        const savedContent = localStorage.getItem('hc_doc_content');
+                        const savedContent = localStorage.getItem('WT_doc_content');
                         if (docEditor && savedContent) {
                             docEditor.innerHTML = savedContent;
                         }
@@ -87,7 +87,7 @@ function restoreViewState() {
                 document.getElementById('testCaseView').style.display = 'block';
                 
                 // 恢复测试用例数据
-                const savedTestCases = localStorage.getItem('hc_test_cases');
+                const savedTestCases = localStorage.getItem('WT_test_cases');
                 if (savedTestCases) {
                     const tableBody = document.getElementById('testCaseTableBody');
                     if (tableBody) {
@@ -123,8 +123,8 @@ function restoreViewState() {
                 document.getElementById('agentView').style.display = 'none';
                 document.getElementById('performanceAnalysisView').style.display = 'block';
                 // 恢复数据源配置状态
-                const savedSources = localStorage.getItem('hc_perf_data_sources');
-                const savedConfig = localStorage.getItem('hc_perf_data_source');
+                const savedSources = localStorage.getItem('WT_perf_data_sources');
+                const savedConfig = localStorage.getItem('WT_perf_data_source');
                 if ((savedSources && JSON.parse(savedSources).length > 0) || savedConfig) {
                     dataSourceConfigured = true;
                 }
@@ -163,7 +163,7 @@ async function loadTestTasks() {
         if (data && data.length > 0) {
             testTasks = data;
         } else {
-            const stored = localStorage.getItem('hc_test_tasks');
+            const stored = localStorage.getItem('WT_test_tasks');
             if (stored) {
                 testTasks = JSON.parse(stored);
                 await saveTestTasks();
@@ -171,7 +171,7 @@ async function loadTestTasks() {
         }
     } catch (e) {
         console.error('API fetch failed:', e);
-        const stored = localStorage.getItem('hc_test_tasks');
+        const stored = localStorage.getItem('WT_test_tasks');
         if (stored) {
             testTasks = JSON.parse(stored);
         }
@@ -188,15 +188,15 @@ async function saveTestTasks() {
         if (!response.ok) {
             throw new Error('API returned ' + response.status);
         }
-        localStorage.setItem('hc_test_tasks', JSON.stringify(testTasks));
+        localStorage.setItem('WT_test_tasks', JSON.stringify(testTasks));
     } catch (e) {
         console.error('API save failed:', e);
-        localStorage.setItem('hc_test_tasks', JSON.stringify(testTasks));
+        localStorage.setItem('WT_test_tasks', JSON.stringify(testTasks));
     }
 }
 
 function loadDefaultProjects() {
-    const stored = localStorage.getItem('hc_projects');
+    const stored = localStorage.getItem('WT_projects');
     if (stored) {
         projects = JSON.parse(stored);
     } else {
@@ -267,7 +267,7 @@ async function saveProjects() {
         });
     } catch (e) {
         // 如果API请求失败，使用localStorage作为后备
-        localStorage.setItem('hc_projects', JSON.stringify(projects));
+        localStorage.setItem('WT_projects', JSON.stringify(projects));
     }
 }
 
@@ -518,21 +518,21 @@ function showAgentView() {
     if (project) {
         exitBtn.textContent = project.name + ' - 退出项目';
         document.getElementById('headerTitle').textContent = 'AI+智能体';
-        localStorage.setItem('hc_current_project_id', currentProjectId);
-        localStorage.setItem('hc_current_view', 'agentView');
+        localStorage.setItem('WT_current_project_id', currentProjectId);
+        localStorage.setItem('WT_current_view', 'agentView');
     }
 }
 
 function showTestCaseView() {
     document.getElementById('agentView').style.display = 'none';
     document.getElementById('testCaseView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'testCaseView');
+    localStorage.setItem('WT_current_view', 'testCaseView');
 }
 
 function showApiAutoView() {
     document.getElementById('agentView').style.display = 'none';
     document.getElementById('apiAutoView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'apiAutoView');
+    localStorage.setItem('WT_current_view', 'apiAutoView');
     loadApiCases();
     setTimeout(refreshApiCasesDisplay, 100);
 }
@@ -541,7 +541,7 @@ function loadApiCases() {
     const tableBody = document.getElementById('apiAutoTableBody');
     if (!tableBody) return;
     
-    const savedData = localStorage.getItem('hc_api_cases');
+    const savedData = localStorage.getItem('WT_api_cases');
     if (savedData) {
         tableBody.innerHTML = savedData;
     } else {
@@ -573,7 +573,7 @@ function loadApiCases() {
             `;
         });
         tableBody.innerHTML = html;
-        localStorage.setItem('hc_api_cases', html);
+        localStorage.setItem('WT_api_cases', html);
     }
     
     const totalSpan = document.getElementById('apiCaseTotal');
@@ -599,7 +599,7 @@ function refreshApiCasesDisplay() {
         }
     });
     
-    localStorage.setItem('hc_api_cases', tableBody.innerHTML);
+    localStorage.setItem('WT_api_cases', tableBody.innerHTML);
 }
 
 function searchApiCases() {
@@ -682,7 +682,7 @@ function resetApiFilters() {
     showToast('已重置筛选条件', 'success');
 }
 
-let apiTestTasks = JSON.parse(localStorage.getItem('hc_api_test_tasks') || '[]');
+let apiTestTasks = JSON.parse(localStorage.getItem('WT_api_test_tasks') || '[]');
 
 function createApiTestTask() {
     const tableBody = document.getElementById('apiAutoTableBody');
@@ -794,7 +794,7 @@ function confirmCreateApiTestTask() {
     };
     
     apiTestTasks.push(newTask);
-    localStorage.setItem('hc_api_test_tasks', JSON.stringify(apiTestTasks));
+    localStorage.setItem('WT_api_test_tasks', JSON.stringify(apiTestTasks));
     
     closeModal('createApiTaskModal');
     showToast('测试任务创建成功', 'success');
@@ -888,7 +888,7 @@ function executeApiTestTask(index) {
     }
     
     apiTestTasks[index].status = '执行中';
-    localStorage.setItem('hc_api_test_tasks', JSON.stringify(apiTestTasks));
+    localStorage.setItem('WT_api_test_tasks', JSON.stringify(apiTestTasks));
     showToast('测试任务开始执行...', 'info');
     
     closeModal('apiTestRecordsModal');
@@ -907,7 +907,7 @@ function executeApiTestTask(index) {
                 duration: (Math.random() * 5 + 2).toFixed(2) + 's'
             };
             
-            localStorage.setItem('hc_api_test_tasks', JSON.stringify(apiTestTasks));
+            localStorage.setItem('WT_api_test_tasks', JSON.stringify(apiTestTasks));
             showToast('测试任务执行完成', 'success');
             showApiTestRecords();
         }
@@ -1050,7 +1050,7 @@ function deleteApiTestTask(index) {
 
 function confirmDeleteApiTestTask(index) {
     apiTestTasks.splice(index, 1);
-    localStorage.setItem('hc_api_test_tasks', JSON.stringify(apiTestTasks));
+    localStorage.setItem('WT_api_test_tasks', JSON.stringify(apiTestTasks));
     closeModal('deleteApiTaskConfirmModal');
     closeModal('apiTestRecordsModal');
     showToast('测试任务已删除', 'success');
@@ -1143,7 +1143,7 @@ function confirmEditApiCase(id) {
         }
     });
     
-    localStorage.setItem('hc_api_cases', tableBody.innerHTML);
+    localStorage.setItem('WT_api_cases', tableBody.innerHTML);
     closeModal('editApiCaseModal');
     showToast('用例更新成功', 'success');
 }
@@ -1182,7 +1182,7 @@ function confirmDeleteApiCase() {
         link.closest('tr').remove();
         const tableBody = document.getElementById('apiAutoTableBody');
         if (tableBody) {
-            localStorage.setItem('hc_api_cases', tableBody.innerHTML);
+            localStorage.setItem('WT_api_cases', tableBody.innerHTML);
             const totalSpan = document.getElementById('apiCaseTotal');
             if (totalSpan) {
                 const totalRows = tableBody.querySelectorAll('tr').length;
@@ -1234,7 +1234,7 @@ function confirmBatchDeleteApiCases() {
     });
     
     if (tableBody) {
-        localStorage.setItem('hc_api_cases', tableBody.innerHTML);
+        localStorage.setItem('WT_api_cases', tableBody.innerHTML);
         const totalSpan = document.getElementById('apiCaseTotal');
         if (totalSpan) {
             const totalRows = tableBody.querySelectorAll('tr').length;
@@ -1311,7 +1311,7 @@ function exportTestCase() {
 function showUIAutomationView(mode) {
     document.getElementById('agentView').style.display = 'none';
     document.getElementById('uiAutomationView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'uiAutomationView');
+    localStorage.setItem('WT_current_view', 'uiAutomationView');
 
     // 更新平台下拉框
     if (mode) {
@@ -1336,7 +1336,7 @@ function showDataGenerateView() {
     document.getElementById('testTaskExecView').style.display = 'none';
     // 显示数据生成视图
     document.getElementById('dataGenerateView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'dataGenerateView');
+    localStorage.setItem('WT_current_view', 'dataGenerateView');
 }
 
 function addFieldConfig() {
@@ -1496,12 +1496,12 @@ function saveAsTemplate() {
         });
     });
     
-    localStorage.setItem('hc_data_template', JSON.stringify(template));
+    localStorage.setItem('WT_data_template', JSON.stringify(template));
     showToast('模板保存成功', 'success');
 }
 
 function loadTemplate() {
-    const savedTemplate = localStorage.getItem('hc_data_template');
+    const savedTemplate = localStorage.getItem('WT_data_template');
     if (!savedTemplate) {
         showToast('没有保存的模板', 'error');
         return;
@@ -1658,7 +1658,7 @@ function showPerformanceAnalysisView() {
             return;
         }
         perfView.style.display = 'block';
-        localStorage.setItem('hc_current_view', 'performanceAnalysisView');
+        localStorage.setItem('WT_current_view', 'performanceAnalysisView');
         perfLog('视图已切换到 performanceAnalysisView');
 
         // 初始化时间范围
@@ -1710,8 +1710,8 @@ function checkDataSourceStatus() {
     perfLog('checkDataSourceStatus 开始');
     try {
         // 从localStorage恢复配置状态
-        const savedSources = localStorage.getItem('hc_perf_data_sources');
-        const savedConfig = localStorage.getItem('hc_perf_data_source');
+        const savedSources = localStorage.getItem('WT_perf_data_sources');
+        const savedConfig = localStorage.getItem('WT_perf_data_source');
         perfLog('localStorage 数据源数据', { savedSources, savedConfig });
 
         if ((savedSources && JSON.parse(savedSources).length > 0) || savedConfig) {
@@ -1900,7 +1900,7 @@ function renderDataSourceList() {
 function loadSavedDataSources() {
     perfLog('loadSavedDataSources 开始');
     try {
-        const saved = localStorage.getItem('hc_perf_data_sources');
+        const saved = localStorage.getItem('WT_perf_data_sources');
         perfLog('localStorage 中的数据源', saved);
         if (saved) {
             try {
@@ -1928,12 +1928,12 @@ function saveDataSources() {
             return;
         }
 
-        localStorage.setItem('hc_perf_data_sources', JSON.stringify(dataSources));
+        localStorage.setItem('WT_perf_data_sources', JSON.stringify(dataSources));
         perfLog('数据源列表已保存到 localStorage');
 
         // 更新第一个数据源为当前活动数据源
         const primarySource = dataSources[0];
-        localStorage.setItem('hc_perf_data_source', JSON.stringify({
+        localStorage.setItem('WT_perf_data_source', JSON.stringify({
             type: 'http',
             url: primarySource.url,
             authType: 'none',
@@ -1985,7 +1985,7 @@ let perfHistory = [];
 function loadPerfHistory() {
     perfLog('loadPerfHistory 开始');
     try {
-        const saved = localStorage.getItem('hc_perf_history');
+        const saved = localStorage.getItem('WT_perf_history');
         perfLog('localStorage 中的历史记录', saved ? `长度=${saved.length}` : 'null');
         if (saved) {
             try {
@@ -2006,7 +2006,7 @@ function loadPerfHistory() {
 function savePerfHistory() {
     perfLog('savePerfHistory 开始，记录数量', perfHistory.length);
     try {
-        localStorage.setItem('hc_perf_history', JSON.stringify(perfHistory));
+        localStorage.setItem('WT_perf_history', JSON.stringify(perfHistory));
         perfLog('历史记录已保存到 localStorage');
     } catch (err) {
         perfLogError('savePerfHistory 异常', err);
@@ -2588,7 +2588,7 @@ function loadUIAutomationCases() {
     const uiAutoTableBody = document.getElementById('uiAutoTableBody');
     if (!uiAutoTableBody) return;
 
-    const savedTestCases = localStorage.getItem('hc_test_cases');
+    const savedTestCases = localStorage.getItem('WT_test_cases');
     
     if (savedTestCases) {
         const parser = new DOMParser();
@@ -3050,14 +3050,14 @@ function deleteTestTask(index) {
 function showTestExecRecords() {
     document.getElementById('uiAutomationView').style.display = 'none';
     document.getElementById('testTaskExecView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'testTaskExecView');
+    localStorage.setItem('WT_current_view', 'testTaskExecView');
     refreshTaskList();
 }
 
 function backToUIAutomation() {
     document.getElementById('testTaskExecView').style.display = 'none';
     document.getElementById('uiAutomationView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'uiAutomationView');
+    localStorage.setItem('WT_current_view', 'uiAutomationView');
 }
 
 function refreshTaskList() {
@@ -3289,7 +3289,7 @@ function confirmGenerateTestCase() {
     });
     
     tableBody.innerHTML = html;
-    localStorage.setItem('hc_test_cases', html);
+    localStorage.setItem('WT_test_cases', html);
     
     const totalSpan = document.getElementById('caseTotal');
     if (totalSpan) totalSpan.textContent = `共 ${testCases.length} 条`;
@@ -3355,7 +3355,7 @@ function confirmAddTestCase() {
         </td>
     `;
     tableBody.appendChild(newRow);
-    localStorage.setItem('hc_test_cases', tableBody.innerHTML);
+    localStorage.setItem('WT_test_cases', tableBody.innerHTML);
     
     const totalSpan = document.getElementById('caseTotal');
     if (totalSpan) {
@@ -3414,7 +3414,7 @@ function confirmDeleteTestCase() {
         setTimeout(() => modal.remove(), 300);
     }
     
-    localStorage.setItem('hc_test_cases', tableBody.innerHTML);
+    localStorage.setItem('WT_test_cases', tableBody.innerHTML);
     
     const totalSpan = document.getElementById('caseTotal');
     if (totalSpan) {
@@ -3499,7 +3499,7 @@ function confirmRemoveTestCase(rowIndex) {
     rows[rowIndex - 1].remove();
     
     // 保存更新后的测试用例
-    localStorage.setItem('hc_test_cases', tableBody.innerHTML);
+    localStorage.setItem('WT_test_cases', tableBody.innerHTML);
     
     const modal = document.getElementById('removeTestCaseModal');
     if (modal) {
@@ -3519,15 +3519,15 @@ function exitProject() {
     document.getElementById('uiAutomationView').style.display = 'none';
     document.getElementById('btnExitProject').style.display = 'none';
     document.getElementById('headerTitle').textContent = 'AI+项目中心';
-    localStorage.removeItem('hc_current_project_id');
-    localStorage.removeItem('hc_current_view');
-    localStorage.removeItem('hc_test_cases');
+    localStorage.removeItem('WT_current_project_id');
+    localStorage.removeItem('WT_current_view');
+    localStorage.removeItem('WT_test_cases');
 }
 
 function showApiDocAnalysis() {
     document.getElementById('agentView').style.display = 'none';
     document.getElementById('apiDocView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'apiDocView');
+    localStorage.setItem('WT_current_view', 'apiDocView');
     
     // 重置状态：隐藏右侧内容区和顶部按钮
     const docMain = document.getElementById('docMain');
@@ -3554,7 +3554,7 @@ function backToAgent() {
     document.getElementById('dataGenerateView').style.display = 'none';
     document.getElementById('performanceAnalysisView').style.display = 'none';
     document.getElementById('agentView').style.display = 'block';
-    localStorage.setItem('hc_current_view', 'agentView');
+    localStorage.setItem('WT_current_view', 'agentView');
     uploadedFile = null;
     
     const uploadedFiles = document.getElementById('uploadedFiles');
@@ -4241,23 +4241,23 @@ function confirmImportDocument() {
         }
         docTree.innerHTML = treeHTML;
         // 保存文档树到 localStorage
-        localStorage.setItem('hc_doc_tree', treeHTML);
+        localStorage.setItem('WT_doc_tree', treeHTML);
     }
     
     // 默认显示文档介绍的内容
     if (docEditor) {
         docEditor.innerHTML = documentContents['文档介绍'];
         // 保存文档内容到 localStorage
-        localStorage.setItem('hc_doc_content', documentContents['文档介绍']);
+        localStorage.setItem('WT_doc_content', documentContents['文档介绍']);
     }
     
     // 保存文档导入状态
-    localStorage.setItem('hc_doc_imported', 'true');
+    localStorage.setItem('WT_doc_imported', 'true');
     
     // 清除之前保存的需求数据（因为导入了新文档）
-    localStorage.removeItem('hc_requirement_saved');
-    localStorage.removeItem('hc_saved_requirement_content');
-    localStorage.removeItem('hc_saved_requirement_tree');
+    localStorage.removeItem('WT_requirement_saved');
+    localStorage.removeItem('WT_saved_requirement_content');
+    localStorage.removeItem('WT_saved_requirement_tree');
     
     closeModal('importDocumentModal');
     showToast('文档导入成功', 'success');
@@ -4383,17 +4383,17 @@ function saveRequirement() {
     // 保存当前文档内容到 localStorage
     const docEditor = document.getElementById('docEditor');
     if (docEditor) {
-        localStorage.setItem('hc_saved_requirement_content', docEditor.innerHTML);
+        localStorage.setItem('WT_saved_requirement_content', docEditor.innerHTML);
     }
     
     // 保存文档树结构
     const docTree = document.getElementById('docTree');
     if (docTree) {
-        localStorage.setItem('hc_saved_requirement_tree', docTree.innerHTML);
+        localStorage.setItem('WT_saved_requirement_tree', docTree.innerHTML);
     }
     
     // 保存保存状态标记
-    localStorage.setItem('hc_requirement_saved', 'true');
+    localStorage.setItem('WT_requirement_saved', 'true');
     
     showToast('保存成功', 'success');
 }
