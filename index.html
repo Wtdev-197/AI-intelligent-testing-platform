@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 项目中心</title>
+    <link rel="stylesheet" href="styles.css?v=1.0.24">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon"></span>
+                    <span class="logo-text" id="headerTitle"> AI+项目中心</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-exit" id="btnExitProject" style="display: none;" onclick="exitProject()">退出项目</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="project-grid" id="projectGrid">
+                <div class="project-card add-project-card" onclick="showCreateModal()">
+                    <div class="add-icon">+</div>
+                    <div class="add-text">添加新项目</div>
+                </div>
+            </div>
+        </main>
+
+        <div class="modal-overlay" id="createModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>添加项目</h3>
+                    <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="createForm">
+                        <div class="form-group">
+                            <label><span class="required">*</span> 项目名称</label>
+                            <input type="text" id="projectName" placeholder="请输入项目名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label>项目描述</label>
+                            <textarea id="projectDesc" placeholder="请输入项目描述（可选）" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 密码</label>
+                            <input type="password" id="projectPassword" placeholder="请输入密码" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 大语言模型URL</label>
+                            <input type="url" id="llmUrl" placeholder="请输入大模型API URL" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 语言模型API Key</label>
+                            <input type="password" id="llmApiKey" placeholder="请输入大模型API Key" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 语言模型名称</label>
+                            <input type="text" id="llmName" placeholder="请输入模型名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 视觉语言模型URL</label>
+                            <input type="url" id="vlmUrl" placeholder="请输入大模型API URL" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 视觉语言模型API Key</label>
+                            <input type="password" id="vlmApiKey" placeholder="请输入大模型API Key" required>
+                        </div>
+                        <div class="form-group">
+                            <label><span class="required">*</span> 视觉语言模型名称</label>
+                            <input type="text" id="vlmName" placeholder="请输入模型名称" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('createModal')">取消</button>
+                    <button class="btn btn-primary" onclick="createProject()">创建</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="editModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>编辑项目</h3>
+                    <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-steps">
+                        <p>1. 在【AI + 项目中心】界面选中待编辑项目</p>
+                        <p>2. 点击【编辑】按钮</p>
+                        <p>3. 可对界面内容进行修改，完成后点击【更新】；若放弃修改，点击【取消】</p>
+                    </div>
+                    <form id="editForm">
+                        <input type="hidden" id="editProjectId">
+                        <div class="form-group">
+                            <label>项目名称 <span class="required">*</span></label>
+                            <input type="text" id="editProjectName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>项目描述</label>
+                            <textarea id="editProjectDesc" rows="3"></textarea>
+                        </div>
+                        <div class="form-section">
+                            <h4>语言模型配置</h4>
+                            <div class="form-group">
+                                <label>大语言模型 URL</label>
+                                <input type="url" id="editLlmUrl">
+                            </div>
+                            <div class="form-group">
+                                <label>语言模型 API-Key</label>
+                                <input type="password" id="editLlmApiKey">
+                            </div>
+                            <div class="form-group">
+                                <label>语言模型名称</label>
+                                <input type="text" id="editLlmName">
+                            </div>
+                        </div>
+                        <div class="form-section">
+                            <h4>视觉语言模型配置</h4>
+                            <div class="form-group">
+                                <label>视觉语言模型 URL</label>
+                                <input type="url" id="editVlmUrl">
+                            </div>
+                            <div class="form-group">
+                                <label>视觉语言模型 API-Key</label>
+                                <input type="password" id="editVlmApiKey">
+                            </div>
+                            <div class="form-group">
+                                <label>视觉语言模型名称</label>
+                                <input type="text" id="editVlmName">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('editModal')">取消</button>
+                    <button class="btn btn-primary" onclick="updateProject()">更新</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="deleteModal">
+            <div class="modal modal-small">
+                <div class="modal-header">
+                    <h3>删除项目</h3>
+                    <button class="modal-close" onclick="closeModal('deleteModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-steps">
+                        <p>1. 在【AI + 项目中心】界面选中待删除项目</p>
+                        <p>2. 点击【删除】按钮</p>
+                        <p>3. 输入项目密码后点击【确认】执行删除操作；若放弃删除，点击【取消】</p>
+                    </div>
+                    <div class="form-group">
+                        <label>项目密码</label>
+                        <input type="password" id="deletePassword" placeholder="请输入项目密码">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('deleteModal')">取消</button>
+                    <button class="btn btn-danger" onclick="confirmDelete()">确认</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="passwordModal">
+            <div class="modal modal-small">
+                <div class="modal-header">
+                    <h3>验证</h3>
+                    <button class="modal-close" onclick="closeModal('passwordModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>请输入项目密码</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="enterPassword" placeholder="请输入密码" oninput="checkPasswordLength()">
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()">
+                                <span id="eyeIcon">👁</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('passwordModal')">取消</button>
+                    <button class="btn btn-primary" id="confirmBtn" onclick="confirmEnterProject()" disabled>确认</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="addDirectoryModal">
+            <div class="modal modal-small">
+                <div class="modal-header">
+                    <h3>添加根目录</h3>
+                    <button class="modal-close" onclick="closeModal('addDirectoryModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="text" id="directoryName" placeholder="请输入名称">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('addDirectoryModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmAddDirectory()">确认</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="importDocumentModal">
+            <div class="modal modal-large">
+                <div class="modal-header">
+                    <h3>导入需求文档</h3>
+                    <button class="modal-close" onclick="closeModal('importDocumentModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="import-section">
+                        <label class="import-label">选择文档</label>
+                        <div class="upload-area-large" id="uploadAreaLarge">
+                            <div class="upload-cloud-icon">☁️</div>
+                            <p class="upload-text-large">拖拽文件到此处或 <span class="upload-link" onclick="document.getElementById('fileInputLarge').click()">点击上传</span></p>
+                            <input type="file" id="fileInputLarge" accept=".docx,.md" style="display: none;">
+                        </div>
+                        <p class="upload-hint-large">支持格式：WORD(.docx)、Markdown(.md)</p>
+                        <div class="file-selected" id="fileSelected" style="display: none;">
+                            <span class="file-icon">📄</span>
+                            <span class="file-name" id="selectedFileName"></span>
+                        </div>
+                    </div>
+                    <div class="import-section">
+                        <label class="import-label">导入选项</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="replaceExisting">
+                            <label for="replaceExisting">替换现有需求<span class="checkbox-hint">如果勾选，将删除当前项目的所有需求并替换为文档内容</span></label>
+                        </div>
+                    </div>
+                    <div class="import-section">
+                        <label class="import-label">需求标题层级</label>
+                        <select id="requirementLevel" class="level-select">
+                            <option value="1">一级标题</option>
+                            <option value="2" selected>二级标题</option>
+                            <option value="3">三级标题</option>
+                        </select>
+                        <p class="level-hint">选中的层级将作为需求标题</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('importDocumentModal')">取消</button>
+                    <button class="btn btn-primary" onclick="confirmImportDocument()">导入</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="agent-view" id="agentView" style="display: none;">
+            <div class="agent-title">
+                <h2>智能"数字员工"中心，让测试"降本增效"</h2>
+            </div>
+            <div class="agent-grid">
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small">🤖</div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI需求评审助手</h3>
+                    <p>快速识别需求文档中的模糊、矛盾点，结合历史项目经验输出结构化评审意见，让需求更清晰。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-orange">需求分析</span>
+                        <span class="agent-tag tag-orange">风险识别</span>
+                        <span class="agent-tag tag-orange">文档评审</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showApiDocAnalysis()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small"></div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI测试用例智能体</h3>
+                    <p>根据接口文档自动生成用例，支持边界值、等价类划分、状态迁移等多种测试方法。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-green">用例生成</span>
+                        <span class="agent-tag tag-green">场景覆盖</span>
+                        <span class="agent-tag tag-green">边界测试</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showTestCaseView()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small"></div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI视觉UI自动化脚本</h3>
+                    <p>通过截图识别界面元素变化，自动生成UI自动化脚本，无需编写繁琐的定位代码。</p>
+                    <div class="agent-feature-buttons">
+                        <button class="agent-feature-btn" onclick="showUIAutomationView('web')">WEB浏览器</button>
+                        <button class="agent-feature-btn" onclick="showUIAutomationView('mobile')">移动应用端</button>
+                        <button class="agent-feature-btn agent-feature-btn-primary" onclick="showUIAutomationView('ai')">一键AI测试</button>
+                    </div>
+                    <button class="btn-agent-use" onclick="showUIAutomationView()">立即使用 →</button>
+                </div>
+                <div class="agent-card" onclick="showApiDocAnalysis()">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small"></div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI接口文档分析</h3>
+                    <p>一键解析接口文档，智能提取接口信息并生成测试建议，让测试分析不再繁琐。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-orange">文档解析</span>
+                        <span class="agent-tag tag-orange">接口提取</span>
+                        <span class="agent-tag tag-orange">测试建议</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showApiDocAnalysis()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small"></div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI接口用例设计助手</h3>
+                    <p>根据接口文档自动生成测试用例，支持多种测试场景覆盖，让用例设计更高效。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-green">用例设计</span>
+                        <span class="agent-tag tag-green">场景覆盖</span>
+                        <span class="agent-tag tag-green">参数校验</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showTestCaseView()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small">⚡</div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI接口自动化脚本助手</h3>
+                    <p>一键生成自动化测试脚本，支持多语言、多框架，让接口测试更高效。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-red">脚本生成</span>
+                        <span class="agent-tag tag-red">多语言支持</span>
+                        <span class="agent-tag tag-red">框架适配</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showApiAutoView()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small">📊</div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI测试数据生成智能体</h3>
+                    <p>根据接口入参自动生成测试数据，支持边界值、随机值、特定格式数据，告别手动造数据。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-orange">数据生成</span>
+                        <span class="agent-tag tag-orange">边界测试</span>
+                        <span class="agent-tag tag-orange">格式校验</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showDataGenerateView()">立即使用 →</button>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-card-top">
+                        <div class="agent-card-icon-small">📈</div>
+                        <span class="agent-card-badge-small">AI</span>
+                    </div>
+                    <h3>AI性能数据分析助手</h3>
+                    <p>快速识别并清理脏数据，提供数据质量报告，为自动化测试提供高质量测试数据。</p>
+                    <div class="agent-tags">
+                        <span class="agent-tag tag-red">数据清洗</span>
+                        <span class="agent-tag tag-red">质量报告</span>
+                        <span class="agent-tag tag-red">异常检测</span>
+                    </div>
+                    <button class="btn-agent-use" onclick="showPerformanceAnalysisView()">立即使用 →</button>
+                </div>
+                <div class="agent-card agent-card-add">
+                    <div class="add-icon-large">+</div>
+                    <p class="add-text-large">更多智能体持续开发中，敬请期待...</p>
+                </div>
+            </div>
+            <div class="agent-footer">
+                <p>© 2025 AI智能测试平台 版权所有</p>
+                <p>版本号 V1.0.0 | 更新日期</p>
+            </div>
+        </div>
+
+        <div class="api-doc-view" id="apiDocView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + 需求评审</h2>
+                <div class="api-doc-actions" id="apiDocActions" style="display: none;">
+                    <button class="btn btn-primary" onclick="startAIReview()">AI需求评审</button>
+                    <button class="btn btn-secondary" id="btnSaveRequirement" onclick="saveRequirement()">保存需求</button>
+                </div>
+            </div>
+            <div class="api-doc-content">
+                <div class="doc-layout">
+                    <div class="doc-sidebar">
+                        <div class="sidebar-actions">
+                            <button class="sidebar-btn" onclick="addRootDirectory()">添加根目录</button>
+                            <button class="sidebar-btn" onclick="importDocument()">导入文档</button>
+                        </div>
+                        <div class="sidebar-content">
+                            <div class="doc-tree" id="docTree">
+                                <!-- 导入文档后动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="doc-main" id="docMain" style="display: none;">
+                        <div class="doc-toolbar">
+                            <button class="toolbar-btn" title="加粗"><b>B</b></button>
+                            <button class="toolbar-btn" title="斜体"><i>I</i></button>
+                            <button class="toolbar-btn" title="下划线"><u>U</u></button>
+                            <button class="toolbar-btn" title="删除线"><s>S</s></button>
+                            <span class="toolbar-divider"></span>
+                            <button class="toolbar-btn" title="有序列表">1.</button>
+                            <button class="toolbar-btn" title="无序列表">•</button>
+                            <button class="toolbar-btn" title="对齐">≡</button>
+                            <span class="toolbar-divider"></span>
+                            <button class="toolbar-btn" title="链接">🔗</button>
+                            <button class="toolbar-btn" title="图片">🖼</button>
+                            <button class="toolbar-btn" title="代码">&lt;/&gt;</button>
+                            <span class="toolbar-divider"></span>
+                            <button class="toolbar-btn" title="表格">⊞</button>
+                            <button class="toolbar-btn" title="引用">"</button>
+                            <button class="toolbar-btn" title="分割线">—</button>
+                        </div>
+                        <div class="doc-editor" id="docEditor">
+                            <!-- 导入文档后显示内容 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI测试用例智能体视图 -->
+        <div class="api-doc-view" id="testCaseView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + 接口用例设计</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="api-case-layout">
+                    <div class="api-case-left">
+                        <div class="api-case-empty">
+                            <span>暂无数据</span>
+                        </div>
+                    </div>
+                    <div class="api-case-right">
+                        <div class="api-case-input-wrap">
+                            <textarea id="caseSupplement" placeholder="如果您对系统生成的测试用例不满意，可以添加补充特殊要求"></textarea>
+                        </div>
+                        <div class="api-case-action-bar">
+                            <span class="api-case-current">当前：</span>
+                            <div class="api-case-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="generateTestCase()">AI测试用例生成</button>
+                                <button class="btn btn-secondary btn-sm" onclick="addTestCase()">手动添加</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteTestCase()">批量删除</button>
+                                <button class="btn btn-warning btn-sm" onclick="exportTestCase()">导出</button>
+                            </div>
+                        </div>
+                        <div class="api-case-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th width="40"><input type="checkbox" id="selectAllCaseCheckbox" onclick="toggleSelectAllCases(this)"></th>
+                                        <th width="60">ID</th>
+                                        <th>用例名称</th>
+                                        <th width="80">优先级</th>
+                                        <th width="120">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="apiCaseTableBody">
+                                    <tr>
+                                        <td colspan="5" style="text-align:center;color:#909399;padding:30px;">暂无数据</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="api-case-pagination">
+                            <span id="caseTotal">共 0 条</span>
+                            <select class="page-size-select">
+                                <option>10条/页</option>
+                                <option>20条/页</option>
+                                <option>50条/页</option>
+                            </select>
+                            <div class="pagination-controls">
+                                <button class="page-btn" disabled>&lt;</button>
+                                <span class="page-info">1</span>
+                                <button class="page-btn" disabled>&gt;</button>
+                            </div>
+                            <span>前往 <input type="number" value="1" min="1" class="page-jump-input"> 页</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI接口自动化脚本助手视图 -->
+        <div class="api-doc-view" id="apiAutoView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + 接口自动化</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="api-auto-toolbar">
+                    <div class="api-auto-filters">
+                        <div class="filter-group">
+                            <label>用例名称</label>
+                            <input type="text" id="apiCaseName" class="filter-input" placeholder="请输入用例名称">
+                        </div>
+                        <div class="filter-group">
+                            <label>优先级</label>
+                            <select id="apiPriorityFilter" class="filter-select">
+                                <option value="">请选择优先级</option>
+                                <option value="高">高</option>
+                                <option value="中">中</option>
+                                <option value="低">低</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>指定模块</label>
+                            <select id="apiModuleFilter" class="filter-select">
+                                <option value="">请选择</option>
+                                <option value="用户模块">用户模块</option>
+                                <option value="订单模块">订单模块</option>
+                                <option value="商品模块">商品模块</option>
+                                <option value="支付模块">支付模块</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="searchApiCases()">查询</button>
+                        <button class="btn btn-secondary btn-sm" onclick="resetApiFilters()">重置</button>
+                    </div>
+                </div>
+                <div class="api-auto-content">
+                    <div class="api-auto-header-bar">
+                        <div class="api-auto-select-wrap">
+                            <select id="apiTypeSelect" class="filter-select">
+                                <option value="http">HTTP 接口</option>
+                                <option value="grpc">gRPC 接口</option>
+                                <option value="websocket">WebSocket 接口</option>
+                            </select>
+                        </div>
+                        <div class="api-auto-actions">
+                            <button class="btn btn-primary btn-sm" onclick="createApiTestTask()">创建 AI 测试任务</button>
+                            <button class="btn btn-danger btn-sm" onclick="handleApiBatchDelete()">批量删除</button>
+                            <button class="btn btn-warning btn-sm" onclick="showApiTestRecords()">AI 测试执行记录</button>
+                        </div>
+                    </div>
+                    <div class="api-auto-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th width="40"><input type="checkbox" id="apiSelectAll" onclick="toggleApiSelectAll(this)"></th>
+                                    <th width="60">ID</th>
+                                    <th width="80">优先级</th>
+                                    <th>用例名称</th>
+                                    <th width="120">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="apiAutoTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align:center;color:#909399;padding:40px;">暂无数据</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="api-auto-pagination">
+                        <span id="apiCaseTotal">共 0 条</span>
+                        <select class="page-size-select">
+                            <option>10条/页</option>
+                            <option>20条/页</option>
+                            <option>50条/页</option>
+                        </select>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>&lt;</button>
+                            <span class="page-info">1</span>
+                            <button class="page-btn" disabled>&gt;</button>
+                        </div>
+                        <span>前往 <input type="number" value="1" min="1" class="page-jump-input"> 页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI测试数据生成系统视图 -->
+        <div class="api-doc-view" id="dataGenerateView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + 测试数据生成</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="data-generate-container">
+                    <!-- 顶部操作按钮 -->
+                    <div class="data-gen-header">
+                        <div class="data-gen-title">AI测试数据生成系统</div>
+                        <div class="data-gen-actions">
+                            <button class="btn btn-primary btn-sm" onclick="runDataGeneration()">▶ 运行生成</button>
+                            <button class="btn btn-secondary btn-sm" onclick="saveAsTemplate()">📄 保存为模板</button>
+                            <button class="btn btn-warning btn-sm" onclick="loadTemplate()">📁 加载模板</button>
+                        </div>
+                    </div>
+
+                    <!-- 基础配置 -->
+                    <div class="data-gen-section">
+                        <div class="data-gen-section-title">
+                            <span class="section-icon">⚙️</span> 基础配置
+                        </div>
+                        <div class="data-gen-config">
+                            <div class="config-item">
+                                <label>数据量</label>
+                                <input type="number" id="dataCount" value="100" min="1" max="10000" class="config-input">
+                            </div>
+                            <div class="config-item">
+                                <label>数据格式</label>
+                                <select id="dataFormat" class="config-select">
+                                    <option value="json">JSON</option>
+                                    <option value="xml">XML</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="sql">SQL</option>
+                                </select>
+                            </div>
+                            <div class="config-item">
+                                <label>语言</label>
+                                <select id="dataLanguage" class="config-select">
+                                    <option value="zh">中文</option>
+                                    <option value="en">英文</option>
+                                    <option value="mix">中英混合</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 结果示例参考 -->
+                    <div class="data-gen-section">
+                        <div class="data-gen-section-title">
+                            <span class="section-icon">📋</span> 结果示例参考
+                        </div>
+                        <div class="data-gen-example">
+                            <textarea id="exampleInput" placeholder="输入你期望的结果示例（JSON字段）"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 字段配置 -->
+                    <div class="data-gen-section">
+                        <div class="data-gen-section-title">
+                            <span class="section-icon">🔧</span> 字段配置
+                            <button class="btn btn-primary btn-sm add-field-btn" onclick="addFieldConfig()">+ 添加字段</button>
+                        </div>
+                        <div class="data-gen-fields" id="fieldsContainer">
+                            <div class="field-config-row">
+                                <input type="text" class="field-name" placeholder="字段名" value="id">
+                                <select class="field-type">
+                                    <option value="int">整数</option>
+                                    <option value="string" selected>字符串</option>
+                                    <option value="float">浮点数</option>
+                                    <option value="boolean">布尔值</option>
+                                    <option value="date">日期</option>
+                                    <option value="email">邮箱</option>
+                                    <option value="phone">手机号</option>
+                                    <option value="idcard">身份证</option>
+                                    <option value="address">地址</option>
+                                </select>
+                                <input type="text" class="field-rule" placeholder="描述该字段的生成规则">
+                                <button class="field-delete" onclick="deleteFieldConfig(this)">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生成结果 -->
+                    <div class="data-gen-section">
+                        <div class="data-gen-section-title">
+                            <span class="section-icon">📊</span> 生成结果
+                            <div class="result-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="copyJsonResult()">📋 复制JSON</button>
+                                <button class="btn btn-warning btn-sm" onclick="downloadJson()">⬇ 下载文件</button>
+                            </div>
+                        </div>
+                        <div class="data-gen-result">
+                            <div class="result-status" id="resultStatus" style="display: none;">
+                                <span class="status-text">✓ 生成成功，耗时0.5秒</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- JSON预览 -->
+                    <div class="data-gen-section">
+                        <div class="data-gen-section-title">
+                            <span class="section-icon">👁️</span> JSON 预览
+                        </div>
+                        <div class="data-gen-preview" id="jsonPreview">
+                            <pre class="json-preview-content">// 点击"运行生成"按钮生成数据后，预览结果将显示在这里</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI性能数据分析助手视图 -->
+        <div class="api-doc-view" id="performanceAnalysisView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + 性能分析</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="perf-analysis-container">
+                    <!-- 顶部标题和操作 -->
+                    <div class="perf-header">
+                        <div class="perf-title">AI性能分析</div>
+                        <div class="perf-actions">
+                            <button class="btn btn-secondary" onclick="viewPerfHistory()">📋 历史记录</button>
+                            <button class="btn btn-primary" onclick="startPerformanceAnalysis()">▶ 开始分析</button>
+                        </div>
+                    </div>
+
+                    <!-- 性能监测-监控数据源 -->
+                    <div class="perf-section">
+                        <div class="perf-section-header">
+                            <div class="perf-section-title">
+                                <span class="perf-section-icon">📊</span>
+                                性能监测-监控数据源
+                                <span class="perf-status tag-warning" id="dataSourceStatus">(尚未启用)</span>
+                            </div>
+                            <div class="perf-section-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="configDataSource()">✓ 配置数据源</button>
+                                <button class="btn btn-default btn-sm" onclick="refreshDataSource()">✕ 刷新</button>
+                            </div>
+                        </div>
+                        <div class="perf-section-body">
+                            <div class="perf-time-range">
+                                <span class="perf-time-label">开始时间</span>
+                                <input type="datetime-local" id="perfStartTime" class="perf-time-input">
+                                <span class="perf-time-sep">至</span>
+                                <input type="datetime-local" id="perfEndTime" class="perf-time-input">
+                                <span class="perf-time-label">结束时间</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 分析结果 -->
+                    <div class="perf-section">
+                        <div class="perf-section-header">
+                            <div class="perf-section-title">
+                                <span class="perf-section-icon">📈</span>
+                                分析结果
+                            </div>
+                            <div class="perf-section-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="exportReport()">↧ 导出报告</button>
+                            </div>
+                        </div>
+                        <div class="perf-section-body">
+                            <div class="perf-result" id="perfResult">
+                                <div class="perf-empty-state">
+                                    <div class="perf-empty-icon">🔍</div>
+                                    <div class="perf-empty-text">暂无分析结果，请点击"开始分析"按钮</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI视觉UI自动化脚本视图 -->
+        <div class="api-doc-view" id="uiAutomationView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToAgent()">← 返回智能体</button>
+                <h2>AI + UI自动化</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="ui-auto-toolbar">
+                    <div class="ui-auto-filters">
+                        <div class="filter-group">
+                            <label>操作类型</label>
+                            <select class="filter-select">
+                                <option>请输入操作类型</option>
+                                <option>点击</option>
+                                <option>输入</option>
+                                <option>滑动</option>
+                                <option>截图对比</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>截图/用例关联</label>
+                            <select class="filter-select">
+                                <option>请输入用例关联</option>
+                                <option>已关联</option>
+                                <option>未关联</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>测试执行状态</label>
+                            <select class="filter-select">
+                                <option>请选择</option>
+                                <option>待执行</option>
+                                <option>执行中</option>
+                                <option>已通过</option>
+                                <option>已失败</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>执行时间</label>
+                            <select class="filter-select">
+                                <option>请选择</option>
+                                <option>最近一天</option>
+                                <option>最近一周</option>
+                                <option>最近一月</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="searchUIAutomation()">查询</button>
+                        <button class="btn btn-secondary btn-sm" onclick="resetUIAutomation()">重置</button>
+                    </div>
+                </div>
+                <div class="ui-auto-content">
+                    <div class="ui-auto-header-bar">
+                        <div class="ui-auto-title-wrapper">
+                            <select class="ui-auto-platform-select" id="uiAutoPlatform">
+                                <option value="web">WEB 网页</option>
+                                <option value="mobile">移动应用端</option>
+                            </select>
+                        </div>
+                        <div class="ui-auto-actions">
+                            <button class="btn btn-primary btn-sm" onclick="createTestTask()">创建 AI 测试任务</button>
+                            <button class="btn btn-warning btn-sm" onclick="showTestExecRecords()">AI 测试执行记录</button>
+                        </div>
+                    </div>
+                    <div class="test-case-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th width="40"><input type="checkbox"></th>
+                                    <th width="60">ID</th>
+                                    <th>用例名称</th>
+                                    <th width="100">执行状态</th>
+                                    <th width="120">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="uiAutoTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #909399; padding: 40px;">暂无数据</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="test-case-pagination">
+                        <span>共 0 条</span>
+                        <span>10条/页</span>
+                        <div class="pagination-controls">
+                            <button class="page-btn" disabled>&lt;</button>
+                            <span class="page-info">1</span>
+                            <button class="page-btn" disabled>&gt;</button>
+                        </div>
+                        <span>前往 1 页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试任务执行页面 -->
+        <div class="api-doc-view" id="testTaskExecView" style="display: none;">
+            <div class="api-doc-header">
+                <button class="btn-back" onclick="backToUIAutomation()">← 返回</button>
+                <h2>AI + 测试任务执行</h2>
+            </div>
+            <div class="api-doc-content">
+                <div class="test-task-toolbar">
+                    <button class="btn btn-primary" onclick="createTestTask()">创建 AI 测试任务</button>
+                    <button class="btn btn-secondary" id="refreshBtn" onclick="handleRefresh()">刷新</button>
+                    <button class="btn btn-danger" id="batchDeleteBtn" onclick="handleBatchDelete()">批量删除</button>
+                </div>
+                <div class="test-task-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="40"><input type="checkbox" id="selectAllTasks" onclick="toggleSelectAllTasks(this)"></th>
+                                <th width="60">ID</th>
+                                <th width="150">创建时间</th>
+                                <th width="100">执行状态</th>
+                                <th>测试计划</th>
+                                <th width="120">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="testTaskTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #909399; padding: 40px;">暂无数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="test-task-pagination">
+                    <span>共 <span id="taskTotal">0</span> 条</span>
+                    <span>10条/页</span>
+                    <div class="pagination-controls">
+                        <button class="page-btn" onclick="prevPage()" disabled>&lt;</button>
+                        <span class="page-info">1</span>
+                        <button class="page-btn" onclick="nextPage()" disabled>&gt;</button>
+                    </div>
+                    <span>前往 <input type="number" id="goToPage" value="1" style="width:40px;"> 页</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI需求评审模态框 -->
+        <div class="modal-overlay" id="aiReviewModal">
+            <div class="modal modal-large ai-review-modal">
+                <div class="modal-header">
+                    <h3>AI 评审 - 需求文档评审</h3>
+                    <button class="modal-close" onclick="closeModal('aiReviewModal')">&times;</button>
+                </div>
+                <div class="ai-review-tabs">
+                    <span class="ai-review-tab active" onclick="switchReviewTab('review')">需求评审</span>
+                    <span class="ai-review-tab" onclick="switchReviewTab('records')">采纳记录</span>
+                </div>
+                <div class="modal-body">
+                    <!-- 需求评审内容 -->
+                    <div class="ai-review-content" id="reviewContent">
+                        <div class="review-empty" id="reviewEmpty">
+                            <div class="review-empty-icon">📄</div>
+                            <p>暂无评审结果</p>
+                        </div>
+                        <div class="review-processing" id="reviewProcessing" style="display: none;">
+                            <div class="review-processing-header">
+                                <span class="processing-spinner"></span>
+                                <span>AI处理中...</span>
+                            </div>
+                            <div class="review-processing-status">
+                                <span class="status-dot"></span>
+                                <span>AI正在处理中...</span>
+                            </div>
+                            <div class="review-results" id="reviewResults"></div>
+                        </div>
+                    </div>
+                    <!-- 采纳记录内容 -->
+                    <div class="ai-review-content" id="recordsContent" style="display: none;">
+                        <div class="records-empty">
+                            <p>暂无采纳记录</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="review-supplement">
+                        <textarea id="reviewSupplement" placeholder="如果您对需求评审有特殊要求，请补充。"></textarea>
+                    </div>
+                    <div class="review-actions">
+                        <button class="btn btn-primary" id="btnStartReview" onclick="confirmAIReview()">立即开始 AI 需求评审</button>
+                        <button class="btn btn-success" onclick="adoptReview()">采纳</button>
+                        <button class="btn btn-secondary" onclick="saveReview()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=1.0.25"></script>
+</body>
+</html>

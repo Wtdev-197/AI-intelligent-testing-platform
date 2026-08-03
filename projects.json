@@ -1,0 +1,54 @@
+[
+    {
+        "id": 1,
+        "name": "互联网小微保险",
+        "desc": "互联网保险测试",
+        "password": "123456",
+        "llmUrl": "",
+        "llmApiKey": "",
+        "llmName": "",
+        "vlmUrl": "",
+        "vlmApiKey": "",
+        "vlmName": "",
+        "createdAt": "2025-07-20T15:11:12"
+    },
+    {
+        "id": 2,
+        "name": "益禾·接口自动化框架",
+        "desc": "",
+        "password": "123456",
+        "llmUrl": "",
+        "llmApiKey": "",
+        "llmName": "",
+        "vlmUrl": "",
+        "vlmApiKey": "",
+        "vlmName": "",
+        "createdAt": "2025-09-28T15:20:20"
+    },
+    {
+        "id": 3,
+        "name": "AI接口评审",
+        "desc": "AI接口自动化测试框架",
+        "password": "123456",
+        "llmUrl": "",
+        "llmApiKey": "",
+        "llmName": "",
+        "vlmUrl": "",
+        "vlmApiKey": "",
+        "vlmName": "",
+        "createdAt": "2025-09-28T15:05:51"
+    },
+    {
+        "id": 4,
+        "name": "WT-ai",
+        "desc": "WT-ai项目",
+        "password": "123456",
+        "llmUrl": "",
+        "llmApiKey": "",
+        "llmName": "",
+        "vlmUrl": "",
+        "vlmApiKey": "",
+        "vlmName": "",
+        "createdAt": "2025-12-01T10:00:00"
+    }
+]

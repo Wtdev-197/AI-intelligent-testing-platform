@@ -1,0 +1,94 @@
+[
+    {
+        "id": 3,
+        "name": "123",
+        "platform": "web",
+        "caseCount": "8",
+        "remark": "",
+        "status": "已通过",
+        "createdAt": "2026/7/27 14:41:51",
+        "checkedIds": [],
+        "executedAt": "2026/7/27 18:18:48",
+        "report": {
+            "summary": {
+                "taskName": "123",
+                "platform": "WEB 网页",
+                "totalCases": "8",
+                "passedCount": 7,
+                "failedCount": 1,
+                "passRate": "87.5%",
+                "startTime": "2026/7/27 14:41:51",
+                "endTime": "2026/7/27 18:18:48",
+                "duration": "3.00s"
+            },
+            "cases": [
+                {
+                    "id": "001",
+                    "name": "添加收货地址-有效信息添加成功",
+                    "status": "通过",
+                    "duration": "0.53s",
+                    "error": ""
+                },
+                {
+                    "id": "002",
+                    "name": "添加收货地址-无效信息添加失败",
+                    "status": "通过",
+                    "duration": "2.49s",
+                    "error": ""
+                },
+                {
+                    "id": "003",
+                    "name": "删除收货地址-有效操作成功",
+                    "status": "通过",
+                    "duration": "2.46s",
+                    "error": ""
+                },
+                {
+                    "id": "004",
+                    "name": "编辑收货地址-有效操作成功",
+                    "status": "通过",
+                    "duration": "1.71s",
+                    "error": ""
+                },
+                {
+                    "id": "005",
+                    "name": "验证captcha登录成功",
+                    "status": "通过",
+                    "duration": "0.98s",
+                    "error": ""
+                },
+                {
+                    "id": "006",
+                    "name": "验证学生使用手机号注册成功",
+                    "status": "通过",
+                    "duration": "2.26s",
+                    "error": ""
+                },
+                {
+                    "id": "007",
+                    "name": "验证使用微信第三方登录成功",
+                    "status": "通过",
+                    "duration": "1.68s",
+                    "error": ""
+                },
+                {
+                    "id": "008",
+                    "name": "验证使用QQ第三方登录成功",
+                    "status": "失败",
+                    "duration": "0.54s",
+                    "error": "断言失败：期望结果与实际结果不一致"
+                }
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "name": "111",
+        "platform": "web",
+        "caseCount": 0,
+        "remark": "",
+        "status": "待执行",
+        "createdAt": "2026/8/3 15:53:02",
+        "checkedIds": []
+    }
+]
